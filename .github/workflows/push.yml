@@ -1,12 +1,27 @@
-on:  push
+on:
+  push:
+    branches:
+      - main  
+
 name: deploy
+
 jobs:
-  deploy:    
-    name: deploy cloud run 
+  deploy:
+    name: deploy cloud run
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
-      - name: build and push to docker
+
+      - name: Set up environment
+        env:
+          PORT: ${{ secrets.PORT }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          echo "PORT=${PORT}" > .env
+          echo "API_KEY=${API_KEY}" >> .env
+
+      - name: Build and push to Docker
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
