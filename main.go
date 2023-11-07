@@ -26,7 +26,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Println("key:", os.Getenv("API_KEY"))
+		log.Println("key!:", os.Getenv("API_KEY"))
 
 		w.Header().Set("Content-Type", "application/json")
 
