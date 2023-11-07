@@ -1,37 +1,46 @@
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "net/http"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type MiRespuesta struct {
-    Mensaje string `json:"mensaje"`
+	Mensaje string `json:"mensaje"`
 }
 
 func main() {
-    // Define una función de controlador para el punto final GET
-    http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
-        // Crear una estructura de respuesta JSON
-        respuesta := MiRespuesta{Mensaje: "¡Hola, este es un punto final GET en Go!"}
+	Config()
 
-        // Codifica la estructura de respuesta en formato JSON
-        jsonRespuesta, err := json.Marshal(respuesta)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
+	http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
 
-        // Establece el encabezado Content-Type para JSON
-        w.Header().Set("Content-Type", "application/json")
+		respuesta := MiRespuesta{Mensaje: "¡Hola, este es un punto final GET en Go!"}
 
-        // Escribe la respuesta JSON en el cuerpo de la respuesta HTTP
-        w.Write(jsonRespuesta)
-    })
+		jsonRespuesta, err := json.Marshal(respuesta)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		log.Println("key:", os.Getenv("API_KEY"))
 
-    // Inicia el servidor en el puerto 8080
-    if err := http.ListenAndServe(":8086", nil); err != nil {
-        fmt.Println("Error:", err)
-    }
+		w.Header().Set("Content-Type", "application/json")
+
+		w.Write(jsonRespuesta)
+	})
+	PORT := os.Getenv("PORT")
+	if err := http.ListenAndServe(":"+PORT, nil); err != nil {
+		fmt.Println("Error:", err)
+	}
+}
+
+func Config() {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		_ = godotenv.Load("/go/bin/.env")
+	}
 }
