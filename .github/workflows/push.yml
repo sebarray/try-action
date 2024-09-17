@@ -21,12 +21,15 @@ jobs:
           echo "PORT=${PORT}" > .env
           echo "API_KEY=${API_KEY}" >> .env
 
-      - name: Build and push to Docker
-        uses: docker/build-push-action@v1
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: sebarray/tryaction
-          tag_with_ref: true
-          tag_with_sha: true
-          tags: ${{ github.sha }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.LOGIN }}
+
+      - name: Build and push to GitHub Packages
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: ghcr.io/sebarray/${{ github.repository }}/tryaction:latest
