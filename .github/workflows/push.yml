@@ -26,10 +26,10 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.LOGIN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push to GitHub Packages
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ghcr.io/sebarray/${{ github.repository }}/tryaction:latest
+          tags: ghcr.io/sebarray/try-action/tryaction:latest
